@@ -1,7 +1,7 @@
 import express from 'express'
 const router = express.Router()
 
-import { signup } from '../controllers/UserController'
+import { signup, signin, signout } from '../controllers/UserController'
 import {userSignupValidator} from "../validator";
 
 router.get('/', (req, res) => {
@@ -9,5 +9,7 @@ router.get('/', (req, res) => {
 })
 
 router.post('/signup', userSignupValidator, signup)
+router.post('/signin', signin)
+router.get('/signout', signout)
 
 export default router

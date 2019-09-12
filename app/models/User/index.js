@@ -67,6 +67,10 @@ userSchema.methods = {
 			console.log('encryptPassword error: ', err)
 			return ''
 		}
+	},
+
+	authenticate: function (plainText) {
+		return this.encryptPassword(plainText) === this.hashed_password
 	}
 }
 
