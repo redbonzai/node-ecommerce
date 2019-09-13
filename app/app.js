@@ -4,7 +4,7 @@ import morgan from 'morgan'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import expressValidator from 'express-validator'
-import userRoutes from './routes/user'
+import userRoutes from './routes/auth'
 
 const app = express()
 
