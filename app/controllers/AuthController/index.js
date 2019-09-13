@@ -63,3 +63,8 @@ export const signout = (req, res) => {
 		message: 'You have successfully logged out'
 	})
 }
+
+export const requireSignin = expressJwt({
+	secret: process.env.JWT_SECRET,
+	userProperty: 'auth'
+})
