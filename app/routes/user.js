@@ -4,7 +4,7 @@ const router = express.Router()
 import { requireSignin, isAuth, isAdmin } from '../controllers/AuthController'
 import { userById } from '../controllers/UserController'
 
-router.get('/secret/:userId', isAuth, (req, res) => {
+router.get('/secret/:userId', requireSignin, isAuth, isAdmin, (req, res) => {
 	res.json({
 		user: req.profile
 	})
