@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser'
 import expressValidator from 'express-validator'
 import authRoutes from './routes/auth'
 import userRoutes from './routes/user'
+import categoryRoutes from './routes/category'
 
 const app = express()
 
@@ -28,5 +29,6 @@ app.use(expressValidator())
 // Routes
 app.use('/api', authRoutes)
 app.use('/api', userRoutes)
+app.use('/api', categoryRoutes)
 
 app.listen(process.env.PORT || 3200, () => console.log(`The app is listening on port ${process.env.PORT}`))
