@@ -4,7 +4,10 @@ import morgan from 'morgan'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import expressValidator from 'express-validator'
+import authRoutes from './routes/auth'
 import userRoutes from './routes/user'
+import categoryRoutes from './routes/category'
+import productRoutes from './routes/product'
 
 const app = express()
 
@@ -24,7 +27,10 @@ app.use(cookieParser())
 app.use(expressValidator())
 
 
-// hello world
+// Routes
+app.use('/api', authRoutes)
 app.use('/api', userRoutes)
+app.use('/api', categoryRoutes)
+app.use('/api', productRoutes)
 
 app.listen(process.env.PORT || 3200, () => console.log(`The app is listening on port ${process.env.PORT}`))

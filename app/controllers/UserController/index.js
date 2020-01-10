@@ -1,20 +1,15 @@
 import User from '../../models/User'
-import { errorHandler } from '../../helpers/dbErrorHandlers'
 
-export const signup = (req, res) => {
-	console.log('req.body: ', req.body)
-	const user = new User(req.body)
-
-	user.save((err, user) => {
-		if (err) {
+export const userById = (req, res, next, id) => {
+	User.findById(id).exec((err, user) => {
+		if (err || !user) {
 			return res.status(400).json({
-				err: errorHandler(err)
+				error: 'User was not found'
 			})
 		}
 
-		user.salt = undefined
-		user.hashed_password = undefined
+		req.profile = user
+		next()
 
-		res.json({ user })
 	})
 }
