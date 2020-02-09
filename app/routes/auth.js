@@ -1,19 +1,16 @@
-import express from 'express'
-const router = express.Router()
+import express from 'express';
 
-import { signup, signin, signout, requireSignin } from '../controllers/AuthController'
-import {userSignupValidator} from "../validator";
+import { register, login, logout, requireLogin } from '../controllers/AuthController'
+import { userSignupValidator } from '../validator'
 
-router.get('/', (req, res) => {
-	res.send('index is loaded')
+const router = express.Router();
+
+router.post('/register', userSignupValidator, register)
+router.post('/login', login)
+router.get('/logout', logout)
+
+router.get('/hello', requireLogin, (req, res) => {
+    res.send('hello ... ')
 })
 
-router.post('/signup', userSignupValidator, signup)
-router.post('/signin', signin)
-router.get('/signout', signout)
-
-router.get('/hello', requireSignin, (req, res) => {
-	res.send('Hello there')
-})
-
-export default router
+export default router;
