@@ -1,5 +1,5 @@
 export const userSignupValidator = (req, res, next) => {
-	req.check('name', 'Name is required').notEmpty()
+    req.check('name', 'Name is required').notEmpty()
 	req.check('email', 'Name must be between 4 and 32 characters')
 		//.matches(/.+\@.+\..+/)
 		.matches(/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/)
@@ -23,5 +23,6 @@ export const userSignupValidator = (req, res, next) => {
 	}
 
 	next()
+
 
 }
