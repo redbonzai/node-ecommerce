@@ -1,4 +1,4 @@
-require = require('esm')(module /*, options */);
-
 require('dotenv').config();
-module.exports = require('./app/app')
+
+require('esm')(module /*, options */)
+module.exports = require('./App/index.js')
