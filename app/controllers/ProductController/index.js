@@ -3,15 +3,25 @@ import _ from 'lodash'
 import fs from 'fs'
 
 import Product from '../../models/Product'
-import { errorHandler } from '../../helpers/dbErrorHandlers'
+import { errorHandler } from '../../helpers/dbErrorHandler'
+import Category from '../../models/Category'
 
 export const getAllProducts = (req, res) => {
     Product.find({}, (err, result) => {
-        if (err || !result) {
+        if (err) {
             return res.status(400).json({
                 error: errorHandler(err)
             })
         }
+
+        if (!result) {
+            return res.status(404).json({
+                message: 'There are currently no products to view'
+            })
+        }
+
+        let products = result.map(product => product.photo = null)
+        // console.log('products: ', products)
 
         return res.json({ result: result })
     })
@@ -23,6 +33,7 @@ export const createProduct = (req, res) => {
     form.keepExtensions = true
     form.parse(req, (err, fields, files) => {
         if (err) {
+            console.log('form.parse error: ', error)
             return res.status(400).json({
                 error: 'Image could not be uploaded'
             })
@@ -72,9 +83,15 @@ export const getProductById = (req, res) => {
 
 export const productById = (req, res, next, id) => {
     Product.findById(id).exec((err, product) => {
-        if (err || !product) {
+        if (err) {
             return res.status(400).json({
-                error: "Product not found"
+                error: errorHandler(err)
+            })
+        }
+
+        if (!product) {
+            return res.status(404).json({
+                message: 'Product is not found'
             })
         }
 
@@ -101,8 +118,6 @@ export const updateProduct = (req, res) => {
                 error: 'All fields are required'
             })
         }
-
-
         
         let product = req.product
         product = _.extend(product, fields)
@@ -134,7 +149,10 @@ export const updateProduct = (req, res) => {
 
             result.photo = undefined
 
-            res.json(result)
+            res.json({
+                updatedProduct: result,
+                message: 'Product has been successfully updated'
+            })
         })
     })
 
@@ -151,8 +169,154 @@ export const deleteProduct = (req, res) => {
         }
 
         res.json({
-            deletedProduct: product,
+            deletedProduct,
             message: 'Product has been deleted'
         })
     })
 }
+
+/**
+ * Sell / arrival
+ * by sell = /products?sortBy=sold&order=desc&limit=4
+ * by arrival = /products?sortBy=createdAt&order=desc&limit=4
+ * if no params are sent, then app products are returned
+ */
+
+ export const listProductsByParam = (req, res) => {
+     let order = req.query.order ? req.query.order : 'asc'
+     let sortBy = req.query.sortBy ? req.query.sortBy : '_id'
+     let limit = req.query.limit ? parseInt(req.query.limit, 10) : 6
+
+     Product.find()
+     .select('-photo')
+     .populate('gategory')
+     .sort([[sortBy, order]])
+     .limit(limit)
+     .exec((error, data) => {
+        if (error) {
+            return res.status(400).json({
+                error: errorHandler(error)
+            })
+        }
+
+        if (!data) {
+            return res.status(404).json({
+                message: 'There are no products available by that search query.'
+            })
+        }
+
+        return res.json(data)
+     })
+
+ }
+
+ /**
+  * Finds the products based on the req product category
+  * other products that have the same category will be returned
+  * @param {*} req 
+  * @param {*} res 
+  */
+ export const listRelatedProducts = (req, res) => {
+    let limit = req.query.limit ? parseInt(req.query.limit, 10) : 6
+
+    // $ne; means not included.
+    Product.find({
+        _id: {
+            $ne: req.product
+        }, 
+        category: req.product.category 
+    })
+    .limit(limit)
+    .populate('category', '_id name')
+    .exec((error, data) => {
+        if (error) {
+            return res.status(400).json({
+                error: errorHandler(error)
+            })
+        }
+
+        if (!data) {
+            return res.status(404).json({
+                message: 'There are no products available by that search query.'
+            })
+        }
+
+        return res.json(data)
+     })
+
+ }
+
+ export const listCategoriesByProduct = (req, res) => {
+     // console.log('Rquest: ', req)
+    
+     Product.distinct('category', {}, (error, categories) => {
+         if (error) {
+            return res.status(400).json({
+                error: 'Products or Categories not found',
+                message: error
+            })
+         }
+
+         if (!categories) {
+             return res.status(404).json({
+                 message: 'No categories found for given Product'
+             })
+         }
+
+         return res.json({
+             categories
+         })
+     })
+ }
+
+ /**
+  * List Products by search
+  * show categories in checkbox and price range in radio buttons
+  * The frontend will make API requests as the user clicks on checkboxes & radio buttons
+  * @param Request req 
+  * @param json res 
+  */
+ export const listProductsBySearch = (req, res) => {
+    let order = req.body.order ? req.body.order : "desc";
+    let sortBy = req.body.sortBy ? req.body.sortBy : "_id";
+    let limit = req.body.limit ? parseInt(req.body.limit) : 100;
+    let skip = parseInt(req.body.skip);
+    let findArgs = {};
+ 
+    // console.log(order, sortBy, limit, skip, req.body.filters);
+    // console.log("findArgs", findArgs);
+ 
+    for (let key in req.body.filters) {
+        if (req.body.filters[key].length > 0) {
+            if (key === "price") {
+                // gte -  greater than price [0-10]
+                // lte - less than
+                findArgs[key] = {
+                    $gte: req.body.filters[key][0],
+                    $lte: req.body.filters[key][1]
+                };
+            } else {
+                findArgs[key] = req.body.filters[key];
+            }
+        }
+    }
+ 
+    Product.find(findArgs)
+        .select("-photo")
+        .populate("category")
+        .sort([[sortBy, order]])
+        .skip(skip)
+        .limit(limit)
+        .exec((err, data) => {
+            if (err) {
+                return res.status(400).json({
+                    message: 'Products not found',
+                    error: errorHandler(err)
+                });
+            }
+            res.json({
+                size: data.length,
+                data
+            });
+        });
+ }
