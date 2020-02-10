@@ -1,8 +1,9 @@
 import express from 'express'
 const router = express.Router()
 
-import { requireLogin, isAuth, isAdmin } from '../controllers/AuthController'
-import { userById } from '../controllers/UserController'
+import { requireLogin, isAuth, isAdmin } from '../middleware/AuthMiddleware'
+//import { userById } from '../controllers/UserController'
+import { userById } from '../middleware/UserMiddleware'
 
 router.get('/secret/:userId', requireLogin, isAuth, /*isAdmin,*/ (req, res) => {
     

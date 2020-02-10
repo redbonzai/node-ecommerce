@@ -81,25 +81,6 @@ export const getProductById = (req, res) => {
     return res.json(req.product)
 }
 
-export const productById = (req, res, next, id) => {
-    Product.findById(id).exec((err, product) => {
-        if (err) {
-            return res.status(400).json({
-                error: errorHandler(err)
-            })
-        }
-
-        if (!product) {
-            return res.status(404).json({
-                message: 'Product is not found'
-            })
-        }
-
-        req.product = product
-        next()
-    })
-}
-
 export const updateProduct = (req, res) => {
     let form = new formidable.IncomingForm()
     form.keepExtensions = true
