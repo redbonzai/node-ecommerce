@@ -21,7 +21,7 @@ mongoose.connect(process.env.APP_URI, {
     console.log(chalk.blue.bold('MongoDB database connected'))
 })
 
-mongoose.set('useFindAndModify', false)
+mongoose.set('useFindAndModify', false) //fixes a deprecation error for findOneAndUpdate mongoose method
 
 // middleware
 app.use(morgan('dev')) //loging
