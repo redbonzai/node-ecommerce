@@ -320,3 +320,12 @@ export const deleteProduct = (req, res) => {
             });
         });
  }
+
+ export const showProductPhoto = (req, res, next) => {     
+    if (req.product.photo.data) {
+        res.set('Content-Type', req.product.photo.contentType)
+        return res.send(req.product.photo.data)
+    }
+
+    next();
+ }

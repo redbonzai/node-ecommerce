@@ -11,8 +11,11 @@ import {
     getProductById, 
     updateProduct, 
     deleteProduct, 
-    listProductsBySearch 
+    listProductsBySearch, 
+    showProductPhoto 
 } from '../controllers/ProductController'
+
+import productMiddleware from '../middleware/ProductMiddleware'
 import { requireLogin, isAuth, isAdmin } from '../controllers/AuthController'
 import { userById } from '../controllers/UserController'
 
@@ -23,6 +26,7 @@ router.get('/product/:productId', productById, getProductById)
 router.get('/products/categories', listCategoriesByProduct)
 router.post('/product/create/:userId', requireLogin, isAdmin, createProduct)
 router.post('/products/by/search',  listProductsBySearch)
+router.get('/product/photo/:productId', showProductPhoto)
 router.put('/product/:productId/:userId', requireLogin, isAuth, isAdmin, updateProduct)
 router.delete('/product/:productId/:userId', requireLogin, isAuth, isAdmin, deleteProduct)
 
