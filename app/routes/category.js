@@ -3,14 +3,16 @@ const router = express.Router()
 
 import { 
     createCategory, 
-    getCategories, 
-    categoryById, 
+    getCategories,
     getCategory, 
     updateCategory, 
     deleteCategory 
 } from '../controllers/CategoryController'
-import { requireLogin, isAuth, isAdmin } from '../controllers/AuthController'
-import { userById } from '../controllers/UserController'
+import { requireLogin, isAuth, isAdmin } from '../middleware/AuthMiddleware'
+
+// Middleware
+import {categoryById} from '../middleware/CategoryMiddleware'
+import { userById } from '../middleware/UserMiddleware'
 
 router.get('/category', requireLogin, getCategories)
 router.get('/category/:categoryId', requireLogin, categoryById, getCategory)
