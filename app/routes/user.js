@@ -2,7 +2,7 @@ import express from 'express'
 const router = express.Router()
 
 import { requireLogin, isAuth, isAdmin } from '../middleware/AuthMiddleware'
-//import { userById } from '../controllers/UserController'
+import { showUser, updateUser } from '../controllers/UserController'
 import { userById } from '../middleware/UserMiddleware'
 
 router.get('/secret/:userId', requireLogin, isAuth, /*isAdmin,*/ (req, res) => {
@@ -15,6 +15,9 @@ router.get('/secret/:userId', requireLogin, isAuth, /*isAdmin,*/ (req, res) => {
         }
 	})
 })
+
+router.get('/user/:userId', requireLogin, isAuth, showUser)
+router.put('/user/:userId', requireLogin, isAuth, updateUser)
 
 router.param('userId', userById)
 
