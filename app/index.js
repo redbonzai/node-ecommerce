@@ -4,6 +4,7 @@ import chalk from 'chalk'
 import morgan from 'morgan'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
+import cors from 'cors'
 import expressValidator from 'express-validator'
 
 import authRoutes from './routes/auth'
@@ -20,12 +21,15 @@ mongoose.connect(process.env.APP_URI, {
     console.log(chalk.blue.bold('MongoDB database connected'))
 })
 
+mongoose.set('useFindAndModify', false) //fixes a deprecation error for findOneAndUpdate mongoose method
+
 // middleware
 app.use(morgan('dev')) //loging
 
 app.use(bodyParser.json()) //parsing request objects
 app.use(cookieParser()) //parse sessions
 app.use(expressValidator()) // request validation
+app.use(cors()) // handle requests from different domains
 
  // Routes middleware
 app.use('/api', authRoutes)
