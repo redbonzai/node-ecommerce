@@ -7,17 +7,16 @@ import {
     listRelatedProducts,
     listCategoriesByProduct, 
     createProduct, 
-    productById, 
     getProductById, 
     updateProduct, 
     deleteProduct, 
     listProductsBySearch, 
-    showProductPhoto 
+     
 } from '../controllers/ProductController'
 
-import productMiddleware from '../middleware/ProductMiddleware'
-import { requireLogin, isAuth, isAdmin } from '../controllers/AuthController'
-import { userById } from '../controllers/UserController'
+import {productById, showProductPhoto} from '../middleware/ProductMiddleware'
+import { requireLogin, isAuth, isAdmin } from '../middleware/AuthMiddleware'
+import { userById } from '../middleware/UserMiddleware'
 
 router.get('/products', requireLogin, getAllProducts)
 router.get('/products/query', requireLogin, listProductsByParam)
